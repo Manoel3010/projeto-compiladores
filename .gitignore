@@ -1,0 +1,8 @@
+build/
+*.tab.c
+*.tab.h
+*.output
+lex.yy.c
+linguagem
+*.exe
+*.o

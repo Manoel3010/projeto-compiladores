@@ -1,0 +1,36 @@
+{
+    int x;
+    int y;
+    float media;
+    bool ok;
+
+    x = 10;
+    y = 3;
+
+    /* precedencia mista: * liga mais forte que +,
+       que liga mais forte que > , que liga mais forte que && */
+    ok = x + y * 2 > 15 && !false;
+
+    media = (x + y) / 2;
+
+    if (x > y) {
+        media = 1.5;
+    } else {
+        media = 0.5;
+    }
+
+    // if sem else encadeado dentro de if com else (dangling else)
+    if (x == 10)
+        if (y != 3)
+            x = -x;
+        else
+            y = y % 2;
+
+    while (x > 0) {
+        x = x - 1;
+    }
+
+    do {
+        y = y + 1;
+    } while (y <= 10);
+}

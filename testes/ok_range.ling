@@ -1,0 +1,19 @@
+{
+    float f;
+    int i;
+
+    /* O caso critico do lexer: "0..10" tem que virar NUM(0) RANGE NUM(10),
+       e "0.5" na mesma linha tem que continuar sendo um unico REAL. */
+    f = 0.5;
+
+    for i in 0..10 {
+        f = f + 0.5;
+    }
+
+    for i in 0..10 step 2 {
+        f = f * 1.25;
+    }
+
+    f = 0.5 + 10.75;
+    i = 0;
+}

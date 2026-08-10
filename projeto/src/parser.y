@@ -1,20 +1,47 @@
+/* %code requires: vai tanto para parser.tab.c quanto para parser.tab.h.
+   Precisa disso porque a %union la' embaixo usa std::string*, No* e Tipo -
+   e o lexer.l inclui parser.tab.h sem incluir ast.h por conta propria. */
+%code requires {
+#include <string>
+#include "ast.h"
+}
+
 %{
-#include <stdio.h>
+#include <cstdio>
+#include "interp.h"
 
 extern int yylex(void);
 extern int yylineno;
 extern char *yytext;
 
 void yyerror(const char *s);
+
+/* Raiz da AST, preenchida quando 'program' e' reduzido.
+   main.cpp le' essa variavel depois que yyparse() retorna 0. */
+No *raizAst = nullptr;
 %}
+
+%union {
+    long         num;
+    double       real;
+    std::string *str;
+    No          *no;
+    Tipo         tipoval;
+}
 
 /* --- tokens --- */
 %token IF ELSE WHILE DO FOR IN STEP BREAK CONTINUE
 %token INT FLOAT BOOL CHAR
 %token TRUE FALSE
-%token ID NUM REAL
+%token <str>  ID
+%token <num>  NUM
+%token <real> REAL
 %token RANGE
 %token OR AND EQ NE LE GE
+
+/* --- tipos dos nao-terminais: qual campo da union cada um usa --- */
+%type <no>      program block decls decl stmts stmt expr
+%type <tipoval> type
 
 /* --- dangling else: o IF sem ELSE tem precedencia menor que o token ELSE,
        entao o conflito e resolvido sempre pelo shift (ELSE liga ao IF mais
@@ -37,74 +64,78 @@ void yyerror(const char *s);
 %%
 
 program
-    : block
+    : block                                      { raizAst = $1; }
     ;
 
 block
-    : '{' decls stmts '}'
+    : '{' decls stmts '}'                        { $$ = noBloco($2, $3); }
     ;
 
 decls
-    : decls decl
-    | /* vazio */
+    : decls decl                                 { $$ = $1; $$->filhos.push_back($2); }
+    | /* vazio */                                { $$ = noLista(); }
     ;
 
 decl
-    : type ID ';'
+    : type ID ';'                                { $$ = noDecl($1, *$2); delete $2; }
     ;
 
 type
-    : INT
-    | FLOAT
-    | BOOL
-    | CHAR
+    : INT                                        { $$ = Tipo::INT; }
+    | FLOAT                                      { $$ = Tipo::FLOAT; }
+    | BOOL                                       { $$ = Tipo::BOOL; }
+    | CHAR                                       { $$ = Tipo::CHAR; }
     ;
 
 stmts
-    : stmts stmt
-    | /* vazio */
+    : stmts stmt                                 { $$ = $1; $$->filhos.push_back($2); }
+    | /* vazio */                                { $$ = noLista(); }
     ;
 
 stmt
-    : expr ';'
-    | IF '(' expr ')' stmt                      %prec LOWER_THAN_ELSE
-    | IF '(' expr ')' stmt ELSE stmt
-    | WHILE '(' expr ')' stmt
-    | DO stmt WHILE '(' expr ')' ';'
+    : expr ';'                                   { $$ = noExprStmt($1); }
+    | IF '(' expr ')' stmt                       %prec LOWER_THAN_ELSE
+                                                  { $$ = noSe($3, $5); }
+    | IF '(' expr ')' stmt ELSE stmt             { $$ = noSeSenao($3, $5, $7); }
+    | WHILE '(' expr ')' stmt                    { $$ = noEnquanto($3, $5); }
+    | DO stmt WHILE '(' expr ')' ';'             { $$ = noFacaEnquanto($2, $5); }
     /* O corpo do for e um block (exige chaves). Aceitar um stmt qualquer
        tornaria a gramatica ambigua: em "for i in 0..10 -x" o '-' poderia ser
        o menos binario do limite ou o menos unario do corpo, o que produz
        conflitos reduce/reduce que precedencia nao resolve. */
     | FOR ID IN expr RANGE expr block
+          { $$ = noPara(*$2, $4, $6, noLiteral(Valor::deInt(1)), $7); delete $2; }
     | FOR ID IN expr RANGE expr STEP expr block
-    | BREAK ';'
-    | CONTINUE ';'
-    | block
+          { $$ = noPara(*$2, $4, $6, $8, $9); delete $2; }
+    | BREAK ';'                                  { $$ = noQuebra(); }
+    | CONTINUE ';'                               { $$ = noContinua(); }
+    | block                                      { $$ = $1; }
     ;
 
 expr
-    : ID '=' expr
-    | expr OR expr
-    | expr AND expr
-    | expr EQ expr
-    | expr NE expr
-    | expr '<' expr
-    | expr '>' expr
-    | expr LE expr
-    | expr GE expr
-    | expr '+' expr
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
-    | expr '%' expr
-    | '!' expr
-    | '-' expr                                  %prec UMINUS
-    | '(' expr ')'
-    | ID
-    | NUM
-    | REAL
-    | TRUE
-    | FALSE
+    : ID '=' expr                                { $$ = noAtribuicao(*$1, $3); delete $1; }
+    | expr OR expr                               { $$ = noBinario("||", $1, $3); }
+    | expr AND expr                              { $$ = noBinario("&&", $1, $3); }
+    | expr EQ expr                               { $$ = noBinario("==", $1, $3); }
+    | expr NE expr                               { $$ = noBinario("!=", $1, $3); }
+    | expr '<' expr                              { $$ = noBinario("<",  $1, $3); }
+    | expr '>' expr                              { $$ = noBinario(">",  $1, $3); }
+    | expr LE expr                               { $$ = noBinario("<=", $1, $3); }
+    | expr GE expr                               { $$ = noBinario(">=", $1, $3); }
+    | expr '+' expr                              { $$ = noBinario("+",  $1, $3); }
+    | expr '-' expr                              { $$ = noBinario("-",  $1, $3); }
+    | expr '*' expr                              { $$ = noBinario("*",  $1, $3); }
+    | expr '/' expr                              { $$ = noBinario("/",  $1, $3); }
+    | expr '%' expr                              { $$ = noBinario("%",  $1, $3); }
+    | '!' expr                                   { $$ = noUnario("!", $2); }
+    | '-' expr                                   %prec UMINUS
+                                                  { $$ = noUnario("-", $2); }
+    | '(' expr ')'                               { $$ = $2; }
+    | ID                                         { $$ = noIdent(*$1); delete $1; }
+    | NUM                                        { $$ = noLiteral(Valor::deInt($1)); }
+    | REAL                                       { $$ = noLiteral(Valor::deFloat($1)); }
+    | TRUE                                       { $$ = noLiteral(Valor::deBool(true)); }
+    | FALSE                                      { $$ = noLiteral(Valor::deBool(false)); }
     ;
 
 %%

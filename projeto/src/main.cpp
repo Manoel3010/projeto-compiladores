@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "parser.tab.h"
+#include "ast.h"
+#include "interp.h"
 
 extern FILE *yyin;
 extern int yyparse(void);
@@ -8,6 +10,8 @@ extern int yylex(void);
 extern char *yytext;
 extern int yylineno;
 extern int erros_lexicos;
+/* Preenchida por parser.y quando 'program' e' reduzido com sucesso. */
+extern No *raizAst;
 
 /* Nome legivel de um token, usado apenas pelo modo --tokens. */
 static const char *nome_token(int t)
@@ -96,7 +100,7 @@ int main(int argc, char **argv)
         codigo = 1;
     } else {
         printf("Análise concluída com sucesso\n");
-        codigo = 0;
+        codigo = interpretar(raizAst);
     }
 
     if (arquivo != NULL)

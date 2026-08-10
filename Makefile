@@ -24,9 +24,10 @@ SRC   = projeto/src
 BUILD = build
 
 ALVO     = linguagem$(EXE)
-INCLUDES = -I$(BUILD)
+INCLUDES = -I$(BUILD) -I$(SRC)
 
-OBJS = $(BUILD)/parser.tab.o $(BUILD)/lex.yy.o $(BUILD)/main.o
+OBJS = $(BUILD)/parser.tab.o $(BUILD)/lex.yy.o $(BUILD)/main.o \
+       $(BUILD)/value.o $(BUILD)/ast.o $(BUILD)/symtab.o $(BUILD)/interp.o
 
 .PHONY: all clean
 
@@ -48,8 +49,20 @@ $(BUILD)/parser.tab.o: $(BUILD)/parser.tab.c
 $(BUILD)/lex.yy.o: $(BUILD)/lex.yy.c $(BUILD)/parser.tab.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $(BUILD)/lex.yy.c
 
-$(BUILD)/main.o: $(SRC)/main.cpp $(BUILD)/parser.tab.h
+$(BUILD)/main.o: $(SRC)/main.cpp $(BUILD)/parser.tab.h $(SRC)/ast.h $(SRC)/interp.h
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $(SRC)/main.cpp
+
+$(BUILD)/value.o: $(SRC)/value.cpp $(SRC)/value.h | $(BUILD)
+	$(CXX) $(CXXFLAGS) -c -o $@ $(SRC)/value.cpp
+
+$(BUILD)/ast.o: $(SRC)/ast.cpp $(SRC)/ast.h $(SRC)/value.h | $(BUILD)
+	$(CXX) $(CXXFLAGS) -c -o $@ $(SRC)/ast.cpp
+
+$(BUILD)/symtab.o: $(SRC)/symtab.cpp $(SRC)/symtab.h $(SRC)/value.h | $(BUILD)
+	$(CXX) $(CXXFLAGS) -c -o $@ $(SRC)/symtab.cpp
+
+$(BUILD)/interp.o: $(SRC)/interp.cpp $(SRC)/interp.h $(SRC)/ast.h $(SRC)/symtab.h | $(BUILD)
+	$(CXX) $(CXXFLAGS) -c -o $@ $(SRC)/interp.cpp
 
 $(BUILD):
 	mkdir $(BUILD)

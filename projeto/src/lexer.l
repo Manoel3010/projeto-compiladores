@@ -4,7 +4,8 @@
 %x COMENTARIO
 
 %{
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
 #include "parser.tab.h"
 
 /* Contador de erros lexicos, consultado pelo main para definir o codigo de saida. */
@@ -50,14 +51,18 @@ LETRA   [a-zA-Z_]
 "bool"                  { return BOOL; }
 "char"                  { return CHAR; }
 
-    /* --- identificadores --- */
-{LETRA}({LETRA}|{DIGITO})*  { return ID; }
+    /* --- identificadores ---
+       yylval.str precisa ser um std::string* alocado no heap: o Flex so'
+       garante que 'yytext' e' valido durante esta acao, entao precisamos
+       copiar o texto antes de devolver o token. Quem consome esse
+       ponteiro (as acoes do parser.y) e' responsavel por dar 'delete'. */
+{LETRA}({LETRA}|{DIGITO})*  { yylval.str = new std::string(yytext); return ID; }
 
     /* --- literais numericos: REAL vem antes de NUM ---
        Em "0..10" a regra REAL nao fecha (depois do ponto vem outro ponto),
        o Flex faz backtrack e casa NUM(0), depois RANGE, depois NUM(10). */
-{DIGITO}+"."{DIGITO}+   { return REAL; }
-{DIGITO}+               { return NUM; }
+{DIGITO}+"."{DIGITO}+   { yylval.real = atof(yytext); return REAL; }
+{DIGITO}+               { yylval.num  = atol(yytext); return NUM; }
 
     /* --- operador de range --- */
 ".."                    { return RANGE; }

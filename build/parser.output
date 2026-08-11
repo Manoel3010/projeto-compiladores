@@ -1,0 +1,1673 @@
+Gramática
+
+    0 $accept: program $end
+
+    1 program: block
+
+    2 block: '{' decls stmts '}'
+
+    3 decls: decls decl
+    4      | ε
+
+    5 decl: type ID ';'
+
+    6 type: INT
+    7     | FLOAT
+    8     | BOOL
+    9     | CHAR
+
+   10 stmts: stmts stmt
+   11      | ε
+
+   12 stmt: expr ';'
+   13     | IF '(' expr ')' stmt
+   14     | IF '(' expr ')' stmt ELSE stmt
+   15     | WHILE '(' expr ')' stmt
+   16     | DO stmt WHILE '(' expr ')' ';'
+   17     | FOR ID IN expr RANGE expr block
+   18     | FOR ID IN expr RANGE expr STEP expr block
+   19     | BREAK ';'
+   20     | CONTINUE ';'
+   21     | block
+
+   22 expr: ID '=' expr
+   23     | expr PIPE ID
+   24     | expr OR expr
+   25     | expr AND expr
+   26     | expr EQ expr
+   27     | expr NE expr
+   28     | expr '<' expr
+   29     | expr '>' expr
+   30     | expr LE expr
+   31     | expr GE expr
+   32     | expr '+' expr
+   33     | expr '-' expr
+   34     | expr '*' expr
+   35     | expr '/' expr
+   36     | expr '%' expr
+   37     | '!' expr
+   38     | '-' expr
+   39     | '(' expr ')'
+   40     | ID
+   41     | NUM
+   42     | REAL
+   43     | TRUE
+   44     | FALSE
+
+
+Terminais, com as regras onde eles aparecem
+
+    $end (0) 0
+    '!' (33) 37
+    '%' (37) 36
+    '(' (40) 13 14 15 16 39
+    ')' (41) 13 14 15 16 39
+    '*' (42) 34
+    '+' (43) 32
+    '-' (45) 33 38
+    '/' (47) 35
+    ';' (59) 5 12 16 19 20
+    '<' (60) 28
+    '=' (61) 22
+    '>' (62) 29
+    '{' (123) 2
+    '}' (125) 2
+    error (256)
+    IF (258) 13 14
+    ELSE (259) 14
+    WHILE (260) 15 16
+    DO (261) 16
+    FOR (262) 17 18
+    IN (263) 17 18
+    STEP (264) 18
+    BREAK (265) 19
+    CONTINUE (266) 20
+    INT (267) 6
+    FLOAT (268) 7
+    BOOL (269) 8
+    CHAR (270) 9
+    TRUE (271) 43
+    FALSE (272) 44
+    ID <str> (273) 5 17 18 22 23 40
+    NUM <num> (274) 41
+    REAL <real> (275) 42
+    RANGE (276) 17 18
+    PIPE (277) 23
+    OR (278) 24
+    AND (279) 25
+    EQ (280) 26
+    NE (281) 27
+    LE (282) 30
+    GE (283) 31
+    LOWER_THAN_ELSE (284)
+    UMINUS (285)
+
+
+Não terminais com as regras onde eles aparecem
+
+    $accept (45)
+        à esquerda: 0
+    program <no> (46)
+        à esquerda: 1
+        à direita: 0
+    block <no> (47)
+        à esquerda: 2
+        à direita: 1 17 18 21
+    decls <no> (48)
+        à esquerda: 3 4
+        à direita: 2 3
+    decl <no> (49)
+        à esquerda: 5
+        à direita: 3
+    type <tipoval> (50)
+        à esquerda: 6 7 8 9
+        à direita: 5
+    stmts <no> (51)
+        à esquerda: 10 11
+        à direita: 2 10
+    stmt <no> (52)
+        à esquerda: 12 13 14 15 16 17 18 19 20 21
+        à direita: 10 13 14 15 16
+    expr <no> (53)
+        à esquerda: 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
+        à direita: 12 13 14 15 16 17 18 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
+
+
+Estado 0
+
+    0 $accept: • program $end
+
+    '{'  deslocar, e ir ao estado 1
+
+    program  ir ao estado 2
+    block    ir ao estado 3
+
+
+Estado 1
+
+    2 block: '{' • decls stmts '}'
+
+    $padrão  reduzir usando a regra 4 (decls)
+
+    decls  ir ao estado 4
+
+
+Estado 2
+
+    0 $accept: program • $end
+
+    $end  deslocar, e ir ao estado 5
+
+
+Estado 3
+
+    1 program: block •
+
+    $padrão  reduzir usando a regra 1 (program)
+
+
+Estado 4
+
+    2 block: '{' decls • stmts '}'
+    3 decls: decls • decl
+
+    INT    deslocar, e ir ao estado 6
+    FLOAT  deslocar, e ir ao estado 7
+    BOOL   deslocar, e ir ao estado 8
+    CHAR   deslocar, e ir ao estado 9
+
+    $padrão  reduzir usando a regra 11 (stmts)
+
+    decl   ir ao estado 10
+    type   ir ao estado 11
+    stmts  ir ao estado 12
+
+
+Estado 5
+
+    0 $accept: program $end •
+
+    $padrão  aceitar
+
+
+Estado 6
+
+    6 type: INT •
+
+    $padrão  reduzir usando a regra 6 (type)
+
+
+Estado 7
+
+    7 type: FLOAT •
+
+    $padrão  reduzir usando a regra 7 (type)
+
+
+Estado 8
+
+    8 type: BOOL •
+
+    $padrão  reduzir usando a regra 8 (type)
+
+
+Estado 9
+
+    9 type: CHAR •
+
+    $padrão  reduzir usando a regra 9 (type)
+
+
+Estado 10
+
+    3 decls: decls decl •
+
+    $padrão  reduzir usando a regra 3 (decls)
+
+
+Estado 11
+
+    5 decl: type • ID ';'
+
+    ID  deslocar, e ir ao estado 13
+
+
+Estado 12
+
+    2 block: '{' decls stmts • '}'
+   10 stmts: stmts • stmt
+
+    IF        deslocar, e ir ao estado 14
+    WHILE     deslocar, e ir ao estado 15
+    DO        deslocar, e ir ao estado 16
+    FOR       deslocar, e ir ao estado 17
+    BREAK     deslocar, e ir ao estado 18
+    CONTINUE  deslocar, e ir ao estado 19
+    TRUE      deslocar, e ir ao estado 20
+    FALSE     deslocar, e ir ao estado 21
+    ID        deslocar, e ir ao estado 22
+    NUM       deslocar, e ir ao estado 23
+    REAL      deslocar, e ir ao estado 24
+    '-'       deslocar, e ir ao estado 25
+    '!'       deslocar, e ir ao estado 26
+    '{'       deslocar, e ir ao estado 1
+    '}'       deslocar, e ir ao estado 27
+    '('       deslocar, e ir ao estado 28
+
+    block  ir ao estado 29
+    stmt   ir ao estado 30
+    expr   ir ao estado 31
+
+
+Estado 13
+
+    5 decl: type ID • ';'
+
+    ';'  deslocar, e ir ao estado 32
+
+
+Estado 14
+
+   13 stmt: IF • '(' expr ')' stmt
+   14     | IF • '(' expr ')' stmt ELSE stmt
+
+    '('  deslocar, e ir ao estado 33
+
+
+Estado 15
+
+   15 stmt: WHILE • '(' expr ')' stmt
+
+    '('  deslocar, e ir ao estado 34
+
+
+Estado 16
+
+   16 stmt: DO • stmt WHILE '(' expr ')' ';'
+
+    IF        deslocar, e ir ao estado 14
+    WHILE     deslocar, e ir ao estado 15
+    DO        deslocar, e ir ao estado 16
+    FOR       deslocar, e ir ao estado 17
+    BREAK     deslocar, e ir ao estado 18
+    CONTINUE  deslocar, e ir ao estado 19
+    TRUE      deslocar, e ir ao estado 20
+    FALSE     deslocar, e ir ao estado 21
+    ID        deslocar, e ir ao estado 22
+    NUM       deslocar, e ir ao estado 23
+    REAL      deslocar, e ir ao estado 24
+    '-'       deslocar, e ir ao estado 25
+    '!'       deslocar, e ir ao estado 26
+    '{'       deslocar, e ir ao estado 1
+    '('       deslocar, e ir ao estado 28
+
+    block  ir ao estado 29
+    stmt   ir ao estado 35
+    expr   ir ao estado 31
+
+
+Estado 17
+
+   17 stmt: FOR • ID IN expr RANGE expr block
+   18     | FOR • ID IN expr RANGE expr STEP expr block
+
+    ID  deslocar, e ir ao estado 36
+
+
+Estado 18
+
+   19 stmt: BREAK • ';'
+
+    ';'  deslocar, e ir ao estado 37
+
+
+Estado 19
+
+   20 stmt: CONTINUE • ';'
+
+    ';'  deslocar, e ir ao estado 38
+
+
+Estado 20
+
+   43 expr: TRUE •
+
+    $padrão  reduzir usando a regra 43 (expr)
+
+
+Estado 21
+
+   44 expr: FALSE •
+
+    $padrão  reduzir usando a regra 44 (expr)
+
+
+Estado 22
+
+   22 expr: ID • '=' expr
+   40     | ID •
+
+    '='  deslocar, e ir ao estado 39
+
+    $padrão  reduzir usando a regra 40 (expr)
+
+
+Estado 23
+
+   41 expr: NUM •
+
+    $padrão  reduzir usando a regra 41 (expr)
+
+
+Estado 24
+
+   42 expr: REAL •
+
+    $padrão  reduzir usando a regra 42 (expr)
+
+
+Estado 25
+
+   38 expr: '-' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 40
+
+
+Estado 26
+
+   37 expr: '!' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 41
+
+
+Estado 27
+
+    2 block: '{' decls stmts '}' •
+
+    $padrão  reduzir usando a regra 2 (block)
+
+
+Estado 28
+
+   39 expr: '(' • expr ')'
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 42
+
+
+Estado 29
+
+   21 stmt: block •
+
+    $padrão  reduzir usando a regra 21 (stmt)
+
+
+Estado 30
+
+   10 stmts: stmts stmt •
+
+    $padrão  reduzir usando a regra 10 (stmts)
+
+
+Estado 31
+
+   12 stmt: expr • ';'
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    PIPE  deslocar, e ir ao estado 43
+    OR    deslocar, e ir ao estado 44
+    AND   deslocar, e ir ao estado 45
+    EQ    deslocar, e ir ao estado 46
+    NE    deslocar, e ir ao estado 47
+    LE    deslocar, e ir ao estado 48
+    GE    deslocar, e ir ao estado 49
+    '<'   deslocar, e ir ao estado 50
+    '>'   deslocar, e ir ao estado 51
+    '+'   deslocar, e ir ao estado 52
+    '-'   deslocar, e ir ao estado 53
+    '*'   deslocar, e ir ao estado 54
+    '/'   deslocar, e ir ao estado 55
+    '%'   deslocar, e ir ao estado 56
+    ';'   deslocar, e ir ao estado 57
+
+
+Estado 32
+
+    5 decl: type ID ';' •
+
+    $padrão  reduzir usando a regra 5 (decl)
+
+
+Estado 33
+
+   13 stmt: IF '(' • expr ')' stmt
+   14     | IF '(' • expr ')' stmt ELSE stmt
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 58
+
+
+Estado 34
+
+   15 stmt: WHILE '(' • expr ')' stmt
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 59
+
+
+Estado 35
+
+   16 stmt: DO stmt • WHILE '(' expr ')' ';'
+
+    WHILE  deslocar, e ir ao estado 60
+
+
+Estado 36
+
+   17 stmt: FOR ID • IN expr RANGE expr block
+   18     | FOR ID • IN expr RANGE expr STEP expr block
+
+    IN  deslocar, e ir ao estado 61
+
+
+Estado 37
+
+   19 stmt: BREAK ';' •
+
+    $padrão  reduzir usando a regra 19 (stmt)
+
+
+Estado 38
+
+   20 stmt: CONTINUE ';' •
+
+    $padrão  reduzir usando a regra 20 (stmt)
+
+
+Estado 39
+
+   22 expr: ID '=' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 62
+
+
+Estado 40
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+   38     | '-' expr •
+
+    $padrão  reduzir usando a regra 38 (expr)
+
+
+Estado 41
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+   37     | '!' expr •
+
+    $padrão  reduzir usando a regra 37 (expr)
+
+
+Estado 42
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+   39     | '(' expr • ')'
+
+    PIPE  deslocar, e ir ao estado 43
+    OR    deslocar, e ir ao estado 44
+    AND   deslocar, e ir ao estado 45
+    EQ    deslocar, e ir ao estado 46
+    NE    deslocar, e ir ao estado 47
+    LE    deslocar, e ir ao estado 48
+    GE    deslocar, e ir ao estado 49
+    '<'   deslocar, e ir ao estado 50
+    '>'   deslocar, e ir ao estado 51
+    '+'   deslocar, e ir ao estado 52
+    '-'   deslocar, e ir ao estado 53
+    '*'   deslocar, e ir ao estado 54
+    '/'   deslocar, e ir ao estado 55
+    '%'   deslocar, e ir ao estado 56
+    ')'   deslocar, e ir ao estado 63
+
+
+Estado 43
+
+   23 expr: expr PIPE • ID
+
+    ID  deslocar, e ir ao estado 64
+
+
+Estado 44
+
+   24 expr: expr OR • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 65
+
+
+Estado 45
+
+   25 expr: expr AND • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 66
+
+
+Estado 46
+
+   26 expr: expr EQ • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 67
+
+
+Estado 47
+
+   27 expr: expr NE • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 68
+
+
+Estado 48
+
+   30 expr: expr LE • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 69
+
+
+Estado 49
+
+   31 expr: expr GE • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 70
+
+
+Estado 50
+
+   28 expr: expr '<' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 71
+
+
+Estado 51
+
+   29 expr: expr '>' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 72
+
+
+Estado 52
+
+   32 expr: expr '+' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 73
+
+
+Estado 53
+
+   33 expr: expr '-' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 74
+
+
+Estado 54
+
+   34 expr: expr '*' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 75
+
+
+Estado 55
+
+   35 expr: expr '/' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 76
+
+
+Estado 56
+
+   36 expr: expr '%' • expr
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 77
+
+
+Estado 57
+
+   12 stmt: expr ';' •
+
+    $padrão  reduzir usando a regra 12 (stmt)
+
+
+Estado 58
+
+   13 stmt: IF '(' expr • ')' stmt
+   14     | IF '(' expr • ')' stmt ELSE stmt
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    PIPE  deslocar, e ir ao estado 43
+    OR    deslocar, e ir ao estado 44
+    AND   deslocar, e ir ao estado 45
+    EQ    deslocar, e ir ao estado 46
+    NE    deslocar, e ir ao estado 47
+    LE    deslocar, e ir ao estado 48
+    GE    deslocar, e ir ao estado 49
+    '<'   deslocar, e ir ao estado 50
+    '>'   deslocar, e ir ao estado 51
+    '+'   deslocar, e ir ao estado 52
+    '-'   deslocar, e ir ao estado 53
+    '*'   deslocar, e ir ao estado 54
+    '/'   deslocar, e ir ao estado 55
+    '%'   deslocar, e ir ao estado 56
+    ')'   deslocar, e ir ao estado 78
+
+
+Estado 59
+
+   15 stmt: WHILE '(' expr • ')' stmt
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    PIPE  deslocar, e ir ao estado 43
+    OR    deslocar, e ir ao estado 44
+    AND   deslocar, e ir ao estado 45
+    EQ    deslocar, e ir ao estado 46
+    NE    deslocar, e ir ao estado 47
+    LE    deslocar, e ir ao estado 48
+    GE    deslocar, e ir ao estado 49
+    '<'   deslocar, e ir ao estado 50
+    '>'   deslocar, e ir ao estado 51
+    '+'   deslocar, e ir ao estado 52
+    '-'   deslocar, e ir ao estado 53
+    '*'   deslocar, e ir ao estado 54
+    '/'   deslocar, e ir ao estado 55
+    '%'   deslocar, e ir ao estado 56
+    ')'   deslocar, e ir ao estado 79
+
+
+Estado 60
+
+   16 stmt: DO stmt WHILE • '(' expr ')' ';'
+
+    '('  deslocar, e ir ao estado 80
+
+
+Estado 61
+
+   17 stmt: FOR ID IN • expr RANGE expr block
+   18     | FOR ID IN • expr RANGE expr STEP expr block
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 81
+
+
+Estado 62
+
+   22 expr: ID '=' expr •
+   23     | expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    PIPE  deslocar, e ir ao estado 43
+    OR    deslocar, e ir ao estado 44
+    AND   deslocar, e ir ao estado 45
+    EQ    deslocar, e ir ao estado 46
+    NE    deslocar, e ir ao estado 47
+    LE    deslocar, e ir ao estado 48
+    GE    deslocar, e ir ao estado 49
+    '<'   deslocar, e ir ao estado 50
+    '>'   deslocar, e ir ao estado 51
+    '+'   deslocar, e ir ao estado 52
+    '-'   deslocar, e ir ao estado 53
+    '*'   deslocar, e ir ao estado 54
+    '/'   deslocar, e ir ao estado 55
+    '%'   deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 22 (expr)
+
+
+Estado 63
+
+   39 expr: '(' expr ')' •
+
+    $padrão  reduzir usando a regra 39 (expr)
+
+
+Estado 64
+
+   23 expr: expr PIPE ID •
+
+    $padrão  reduzir usando a regra 23 (expr)
+
+
+Estado 65
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   24     | expr OR expr •
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    AND  deslocar, e ir ao estado 45
+    EQ   deslocar, e ir ao estado 46
+    NE   deslocar, e ir ao estado 47
+    LE   deslocar, e ir ao estado 48
+    GE   deslocar, e ir ao estado 49
+    '<'  deslocar, e ir ao estado 50
+    '>'  deslocar, e ir ao estado 51
+    '+'  deslocar, e ir ao estado 52
+    '-'  deslocar, e ir ao estado 53
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 24 (expr)
+
+
+Estado 66
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   25     | expr AND expr •
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    EQ   deslocar, e ir ao estado 46
+    NE   deslocar, e ir ao estado 47
+    LE   deslocar, e ir ao estado 48
+    GE   deslocar, e ir ao estado 49
+    '<'  deslocar, e ir ao estado 50
+    '>'  deslocar, e ir ao estado 51
+    '+'  deslocar, e ir ao estado 52
+    '-'  deslocar, e ir ao estado 53
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 25 (expr)
+
+
+Estado 67
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   26     | expr EQ expr •
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    LE   deslocar, e ir ao estado 48
+    GE   deslocar, e ir ao estado 49
+    '<'  deslocar, e ir ao estado 50
+    '>'  deslocar, e ir ao estado 51
+    '+'  deslocar, e ir ao estado 52
+    '-'  deslocar, e ir ao estado 53
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 26 (expr)
+
+
+Estado 68
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   27     | expr NE expr •
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    LE   deslocar, e ir ao estado 48
+    GE   deslocar, e ir ao estado 49
+    '<'  deslocar, e ir ao estado 50
+    '>'  deslocar, e ir ao estado 51
+    '+'  deslocar, e ir ao estado 52
+    '-'  deslocar, e ir ao estado 53
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 27 (expr)
+
+
+Estado 69
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   30     | expr LE expr •
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    '+'  deslocar, e ir ao estado 52
+    '-'  deslocar, e ir ao estado 53
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 30 (expr)
+
+
+Estado 70
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   31     | expr GE expr •
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    '+'  deslocar, e ir ao estado 52
+    '-'  deslocar, e ir ao estado 53
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 31 (expr)
+
+
+Estado 71
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   28     | expr '<' expr •
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    '+'  deslocar, e ir ao estado 52
+    '-'  deslocar, e ir ao estado 53
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 28 (expr)
+
+
+Estado 72
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   29     | expr '>' expr •
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    '+'  deslocar, e ir ao estado 52
+    '-'  deslocar, e ir ao estado 53
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 29 (expr)
+
+
+Estado 73
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   32     | expr '+' expr •
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 32 (expr)
+
+
+Estado 74
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   33     | expr '-' expr •
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    '*'  deslocar, e ir ao estado 54
+    '/'  deslocar, e ir ao estado 55
+    '%'  deslocar, e ir ao estado 56
+
+    $padrão  reduzir usando a regra 33 (expr)
+
+
+Estado 75
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   34     | expr '*' expr •
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    $padrão  reduzir usando a regra 34 (expr)
+
+
+Estado 76
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   35     | expr '/' expr •
+   36     | expr • '%' expr
+
+    $padrão  reduzir usando a regra 35 (expr)
+
+
+Estado 77
+
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+   36     | expr '%' expr •
+
+    $padrão  reduzir usando a regra 36 (expr)
+
+
+Estado 78
+
+   13 stmt: IF '(' expr ')' • stmt
+   14     | IF '(' expr ')' • stmt ELSE stmt
+
+    IF        deslocar, e ir ao estado 14
+    WHILE     deslocar, e ir ao estado 15
+    DO        deslocar, e ir ao estado 16
+    FOR       deslocar, e ir ao estado 17
+    BREAK     deslocar, e ir ao estado 18
+    CONTINUE  deslocar, e ir ao estado 19
+    TRUE      deslocar, e ir ao estado 20
+    FALSE     deslocar, e ir ao estado 21
+    ID        deslocar, e ir ao estado 22
+    NUM       deslocar, e ir ao estado 23
+    REAL      deslocar, e ir ao estado 24
+    '-'       deslocar, e ir ao estado 25
+    '!'       deslocar, e ir ao estado 26
+    '{'       deslocar, e ir ao estado 1
+    '('       deslocar, e ir ao estado 28
+
+    block  ir ao estado 29
+    stmt   ir ao estado 82
+    expr   ir ao estado 31
+
+
+Estado 79
+
+   15 stmt: WHILE '(' expr ')' • stmt
+
+    IF        deslocar, e ir ao estado 14
+    WHILE     deslocar, e ir ao estado 15
+    DO        deslocar, e ir ao estado 16
+    FOR       deslocar, e ir ao estado 17
+    BREAK     deslocar, e ir ao estado 18
+    CONTINUE  deslocar, e ir ao estado 19
+    TRUE      deslocar, e ir ao estado 20
+    FALSE     deslocar, e ir ao estado 21
+    ID        deslocar, e ir ao estado 22
+    NUM       deslocar, e ir ao estado 23
+    REAL      deslocar, e ir ao estado 24
+    '-'       deslocar, e ir ao estado 25
+    '!'       deslocar, e ir ao estado 26
+    '{'       deslocar, e ir ao estado 1
+    '('       deslocar, e ir ao estado 28
+
+    block  ir ao estado 29
+    stmt   ir ao estado 83
+    expr   ir ao estado 31
+
+
+Estado 80
+
+   16 stmt: DO stmt WHILE '(' • expr ')' ';'
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 84
+
+
+Estado 81
+
+   17 stmt: FOR ID IN expr • RANGE expr block
+   18     | FOR ID IN expr • RANGE expr STEP expr block
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    RANGE  deslocar, e ir ao estado 85
+    PIPE   deslocar, e ir ao estado 43
+    OR     deslocar, e ir ao estado 44
+    AND    deslocar, e ir ao estado 45
+    EQ     deslocar, e ir ao estado 46
+    NE     deslocar, e ir ao estado 47
+    LE     deslocar, e ir ao estado 48
+    GE     deslocar, e ir ao estado 49
+    '<'    deslocar, e ir ao estado 50
+    '>'    deslocar, e ir ao estado 51
+    '+'    deslocar, e ir ao estado 52
+    '-'    deslocar, e ir ao estado 53
+    '*'    deslocar, e ir ao estado 54
+    '/'    deslocar, e ir ao estado 55
+    '%'    deslocar, e ir ao estado 56
+
+
+Estado 82
+
+   13 stmt: IF '(' expr ')' stmt •
+   14     | IF '(' expr ')' stmt • ELSE stmt
+
+    ELSE  deslocar, e ir ao estado 86
+
+    $padrão  reduzir usando a regra 13 (stmt)
+
+
+Estado 83
+
+   15 stmt: WHILE '(' expr ')' stmt •
+
+    $padrão  reduzir usando a regra 15 (stmt)
+
+
+Estado 84
+
+   16 stmt: DO stmt WHILE '(' expr • ')' ';'
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    PIPE  deslocar, e ir ao estado 43
+    OR    deslocar, e ir ao estado 44
+    AND   deslocar, e ir ao estado 45
+    EQ    deslocar, e ir ao estado 46
+    NE    deslocar, e ir ao estado 47
+    LE    deslocar, e ir ao estado 48
+    GE    deslocar, e ir ao estado 49
+    '<'   deslocar, e ir ao estado 50
+    '>'   deslocar, e ir ao estado 51
+    '+'   deslocar, e ir ao estado 52
+    '-'   deslocar, e ir ao estado 53
+    '*'   deslocar, e ir ao estado 54
+    '/'   deslocar, e ir ao estado 55
+    '%'   deslocar, e ir ao estado 56
+    ')'   deslocar, e ir ao estado 87
+
+
+Estado 85
+
+   17 stmt: FOR ID IN expr RANGE • expr block
+   18     | FOR ID IN expr RANGE • expr STEP expr block
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 88
+
+
+Estado 86
+
+   14 stmt: IF '(' expr ')' stmt ELSE • stmt
+
+    IF        deslocar, e ir ao estado 14
+    WHILE     deslocar, e ir ao estado 15
+    DO        deslocar, e ir ao estado 16
+    FOR       deslocar, e ir ao estado 17
+    BREAK     deslocar, e ir ao estado 18
+    CONTINUE  deslocar, e ir ao estado 19
+    TRUE      deslocar, e ir ao estado 20
+    FALSE     deslocar, e ir ao estado 21
+    ID        deslocar, e ir ao estado 22
+    NUM       deslocar, e ir ao estado 23
+    REAL      deslocar, e ir ao estado 24
+    '-'       deslocar, e ir ao estado 25
+    '!'       deslocar, e ir ao estado 26
+    '{'       deslocar, e ir ao estado 1
+    '('       deslocar, e ir ao estado 28
+
+    block  ir ao estado 29
+    stmt   ir ao estado 89
+    expr   ir ao estado 31
+
+
+Estado 87
+
+   16 stmt: DO stmt WHILE '(' expr ')' • ';'
+
+    ';'  deslocar, e ir ao estado 90
+
+
+Estado 88
+
+   17 stmt: FOR ID IN expr RANGE expr • block
+   18     | FOR ID IN expr RANGE expr • STEP expr block
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    STEP  deslocar, e ir ao estado 91
+    PIPE  deslocar, e ir ao estado 43
+    OR    deslocar, e ir ao estado 44
+    AND   deslocar, e ir ao estado 45
+    EQ    deslocar, e ir ao estado 46
+    NE    deslocar, e ir ao estado 47
+    LE    deslocar, e ir ao estado 48
+    GE    deslocar, e ir ao estado 49
+    '<'   deslocar, e ir ao estado 50
+    '>'   deslocar, e ir ao estado 51
+    '+'   deslocar, e ir ao estado 52
+    '-'   deslocar, e ir ao estado 53
+    '*'   deslocar, e ir ao estado 54
+    '/'   deslocar, e ir ao estado 55
+    '%'   deslocar, e ir ao estado 56
+    '{'   deslocar, e ir ao estado 1
+
+    block  ir ao estado 92
+
+
+Estado 89
+
+   14 stmt: IF '(' expr ')' stmt ELSE stmt •
+
+    $padrão  reduzir usando a regra 14 (stmt)
+
+
+Estado 90
+
+   16 stmt: DO stmt WHILE '(' expr ')' ';' •
+
+    $padrão  reduzir usando a regra 16 (stmt)
+
+
+Estado 91
+
+   18 stmt: FOR ID IN expr RANGE expr STEP • expr block
+
+    TRUE   deslocar, e ir ao estado 20
+    FALSE  deslocar, e ir ao estado 21
+    ID     deslocar, e ir ao estado 22
+    NUM    deslocar, e ir ao estado 23
+    REAL   deslocar, e ir ao estado 24
+    '-'    deslocar, e ir ao estado 25
+    '!'    deslocar, e ir ao estado 26
+    '('    deslocar, e ir ao estado 28
+
+    expr  ir ao estado 93
+
+
+Estado 92
+
+   17 stmt: FOR ID IN expr RANGE expr block •
+
+    $padrão  reduzir usando a regra 17 (stmt)
+
+
+Estado 93
+
+   18 stmt: FOR ID IN expr RANGE expr STEP expr • block
+   23 expr: expr • PIPE ID
+   24     | expr • OR expr
+   25     | expr • AND expr
+   26     | expr • EQ expr
+   27     | expr • NE expr
+   28     | expr • '<' expr
+   29     | expr • '>' expr
+   30     | expr • LE expr
+   31     | expr • GE expr
+   32     | expr • '+' expr
+   33     | expr • '-' expr
+   34     | expr • '*' expr
+   35     | expr • '/' expr
+   36     | expr • '%' expr
+
+    PIPE  deslocar, e ir ao estado 43
+    OR    deslocar, e ir ao estado 44
+    AND   deslocar, e ir ao estado 45
+    EQ    deslocar, e ir ao estado 46
+    NE    deslocar, e ir ao estado 47
+    LE    deslocar, e ir ao estado 48
+    GE    deslocar, e ir ao estado 49
+    '<'   deslocar, e ir ao estado 50
+    '>'   deslocar, e ir ao estado 51
+    '+'   deslocar, e ir ao estado 52
+    '-'   deslocar, e ir ao estado 53
+    '*'   deslocar, e ir ao estado 54
+    '/'   deslocar, e ir ao estado 55
+    '%'   deslocar, e ir ao estado 56
+    '{'   deslocar, e ir ao estado 1
+
+    block  ir ao estado 94
+
+
+Estado 94
+
+   18 stmt: FOR ID IN expr RANGE expr STEP expr block •
+
+    $padrão  reduzir usando a regra 18 (stmt)

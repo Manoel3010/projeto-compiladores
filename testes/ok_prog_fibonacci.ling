@@ -1,0 +1,19 @@
+/* Programa: imprime os 10 primeiros termos da sequencia de Fibonacci.
+   Usa o diferencial da linguagem (for com intervalo) e o operador de
+   pipeline para a saida. */
+{
+    int a;
+    int b;
+    int t;
+
+    a = 0;
+    b = 1;
+
+    for i in 0..10 {
+        a |> print;
+
+        t = a + b;
+        a = b;
+        b = t;
+    }
+}

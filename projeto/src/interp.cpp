@@ -204,7 +204,15 @@ int interpretar(No *raiz)
             if (filho->tipo == NoTipo::DECL) {
                 tabela.declarar(filho->texto, filho->tipoDecl);
             } else {
-                executarComando(filho, tabela);
+                /* No escopo global nao existe laco para tratar o sinal, entao
+                   um 'break'/'continue' que chega aqui esta' fora de contexto.
+                   Antes dessa checagem o sinal era descartado em silencio e a
+                   execucao simplesmente continuava no comando seguinte. */
+                Sinal s = executarComando(filho, tabela);
+                if (s == Sinal::QUEBRA)
+                    throw std::runtime_error("'break' fora de um laco");
+                if (s == Sinal::CONTINUA)
+                    throw std::runtime_error("'continue' fora de um laco");
             }
         }
     } catch (const std::exception &e) {

@@ -1,0 +1,6 @@
+Análise concluída com sucesso
+Execucao concluida. Valores finais das variaveis:
+  x          int    = 0
+  y          int    = 11
+  media      float  = 1.5
+  ok         bool   = true

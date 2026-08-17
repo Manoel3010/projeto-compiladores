@@ -30,6 +30,8 @@ enum class NoTipo {
     ATRIBUICAO,  /* texto = nome da variavel, filhos = [expr do lado direito] */
     BINARIO,     /* texto = operador ("+", "==", "&&", ...), filhos = [esq, dir] */
     UNARIO,      /* texto = operador ("!", "-"),              filhos = [operando] */
+    CHAMADA,     /* usado pelo pipeline 'x |> f' (acucar sintatico para 'f(x)'):
+                     texto = nome da funcao chamada ("f"), filhos = [argumento] */
     IDENT,       /* texto = nome da variavel */
     LITERAL      /* valor = o proprio valor literal (NUM/REAL/TRUE/FALSE) */
 };
@@ -61,6 +63,7 @@ No* noContinua();
 No* noAtribuicao(const std::string &nome, No *expr);
 No* noBinario(const std::string &op, No *esq, No *dir);
 No* noUnario(const std::string &op, No *operando);
+No* noChamada(const std::string &nome, No *arg);
 No* noIdent(const std::string &nome);
 No* noLiteral(const Valor &v);
 

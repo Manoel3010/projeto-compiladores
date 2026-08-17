@@ -38,6 +38,7 @@ static const char *nome_token(int t)
     case NUM:       return "NUM";
     case REAL:      return "REAL";
     case RANGE:     return "RANGE";
+    case PIPE:      return "PIPE";
     case OR:        return "OR";
     case AND:       return "AND";
     case EQ:        return "EQ";

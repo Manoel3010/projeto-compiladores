@@ -1,0 +1,18 @@
+{
+    int x;
+    int y;
+
+    x = 10;
+    y = 3;
+
+    /* pipeline: "x |> f" == f(x). A unica funcao embutida hoje e' 'print'
+       (ver PIPELINE.md) -- ela imprime o valor recebido e devolve o mesmo
+       valor, o que permite continuar encadeando depois dela. */
+    x |> print;
+
+    (x + y) |> print;
+
+    /* encadeado duas vezes: imprime x duas vezes, porque 'print' devolve
+       o valor que recebeu. */
+    x |> print |> print;
+}

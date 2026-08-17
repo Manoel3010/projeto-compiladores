@@ -37,6 +37,7 @@ No *raizAst = nullptr;
 %token <num>  NUM
 %token <real> REAL
 %token RANGE
+%token PIPE
 %token OR AND EQ NE LE GE
 
 /* --- tipos dos nao-terminais: qual campo da union cada um usa --- */
@@ -51,6 +52,7 @@ No *raizAst = nullptr;
 
 /* --- precedencia e associatividade dos operadores, da menor para a maior --- */
 %right '='
+%left PIPE
 %left OR
 %left AND
 %left EQ NE
@@ -114,6 +116,12 @@ stmt
 
 expr
     : ID '=' expr                                { $$ = noAtribuicao(*$1, $3); delete $1; }
+    /* Pipeline: "x |> f" == "f(x)" -- x vira o (unico, por enquanto)
+       argumento da chamada de f. Encadeado, "x |> f |> g" == g(f(x)),
+       porque PIPE e' associativo a esquerda (%left) e tem a precedencia
+       mais baixa entre os binarios (so' perde para '='), entao
+       "a + b |> f" == "(a + b) |> f". */
+    | expr PIPE ID                               { $$ = noChamada(*$3, $1); delete $3; }
     | expr OR expr                               { $$ = noBinario("||", $1, $3); }
     | expr AND expr                              { $$ = noBinario("&&", $1, $3); }
     | expr EQ expr                               { $$ = noBinario("==", $1, $3); }

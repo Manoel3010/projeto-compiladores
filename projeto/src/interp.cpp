@@ -55,6 +55,28 @@ static Valor avaliar(No *n, TabelaSimbolos &tabela)
         return operarUnario(n->texto, a);
     }
 
+    case NoTipo::CHAMADA: {
+        /* Chegou aqui via pipeline: "x |> f" virou noChamada("f", x).
+           A linguagem nao tem funcoes definidas pelo usuario (nao ha 'fn'),
+           entao so' reconhecemos um conjunto pequeno de funcoes embutidas.
+           Qualquer outro nome e' um erro em tempo de execucao, tratado
+           igual a divisao por zero (try/catch ja existente em
+           interpretar()) -- nao e' um crash. */
+        Valor arg = avaliar(n->filhos[0], tabela);
+
+        if (n->texto == "print") {
+            printf("%s\n", arg.paraTexto().c_str());
+            /* print "devolve" o proprio valor que recebeu, para poder
+               continuar um pipeline depois dele (ex.: x |> print |> f). */
+            return arg;
+        }
+
+        throw std::runtime_error(
+            "funcao '" + n->texto + "' nao existe "
+            "(a linguagem ainda nao tem funcoes definidas pelo usuario; "
+            "a unica funcao embutida disponivel para o pipeline hoje e' 'print')");
+    }
+
     default:
         throw std::runtime_error("no' inesperado em avaliar()");
     }

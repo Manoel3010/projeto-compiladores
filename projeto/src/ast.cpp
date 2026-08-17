@@ -97,6 +97,14 @@ No* noUnario(const std::string &op, No *operando)
     return n;
 }
 
+No* noChamada(const std::string &nome, No *arg)
+{
+    No *n = new No(NoTipo::CHAMADA);
+    n->texto = nome;
+    n->filhos.push_back(arg);
+    return n;
+}
+
 No* noIdent(const std::string &nome)
 {
     No *n = new No(NoTipo::IDENT);

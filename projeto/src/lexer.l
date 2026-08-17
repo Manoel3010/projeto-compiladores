@@ -67,6 +67,9 @@ LETRA   [a-zA-Z_]
     /* --- operador de range --- */
 ".."                    { return RANGE; }
 
+    /* --- operador de pipeline (diferencial da linguagem): "x |> f" == "f(x)" --- */
+"|>"                    { return PIPE; }
+
     /* --- operadores de dois caracteres (antes dos de um) --- */
 "&&"                    { return AND; }
 "||"                    { return OR; }

@@ -28,7 +28,13 @@
         }
     }
 
-    // limites do range podem ser expressoes
+    // limites do range podem ser expressoes, e o passo pode ser uma variavel.
+    // 'j' precisa receber um valor aqui: o "for j in 0..9" acima declara um 'j'
+    // proprio, em escopo aninhado, que apenas sombreia este -- nao o altera.
+    // Sem esta linha 'j' continuaria valendo 0 (valor inicial de um int
+    // declarado) e o laco abaixo morreria com "'step' do for nao pode ser zero".
+    j = 2;
+
     for i in soma..soma + 10 step j {
         soma = soma - 1;
     }

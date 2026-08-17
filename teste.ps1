@@ -17,18 +17,23 @@ $projeto = $PSScriptRoot
 $imagem  = "ling-build"
 
 # --- garante que a imagem existe ---------------------------------------
-docker image inspect $imagem 2>&1 | Out-Null
-if ($LASTEXITCODE -ne 0) {
+# 'docker image inspect' escreve no stderr quando a imagem nao existe, e com
+# $ErrorActionPreference = "Stop" o PowerShell 5.1 transforma isso em erro
+# fatal antes de chegar no build. 'docker images -q' apenas devolve vazio.
+$imagemId = docker images -q $imagem
+if (-not $imagemId) {
     Write-Host "Imagem '$imagem' nao encontrada. Construindo (so' na primeira vez)..." -ForegroundColor Yellow
     $tmp = Join-Path $env:TEMP "ling-build-ctx"
     New-Item -ItemType Directory -Force -Path $tmp | Out-Null
-    @"
+    $dockerfile = @"
 FROM debian:stable-slim
 RUN apt-get update \
  && apt-get install -y --no-install-recommends g++ make flex bison \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /proj
-"@ | Out-File -FilePath (Join-Path $tmp "Dockerfile") -Encoding utf8
+"@
+    # WriteAllText grava UTF-8 sem BOM; Out-File -Encoding utf8 no PS 5.1 poe BOM.
+    [IO.File]::WriteAllText((Join-Path $tmp "Dockerfile"), $dockerfile)
     docker build -t $imagem $tmp
     if ($LASTEXITCODE -ne 0) { Write-Host "Falha ao construir a imagem." -ForegroundColor Red; exit 1 }
 }

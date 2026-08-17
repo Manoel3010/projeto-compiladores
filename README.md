@@ -29,20 +29,30 @@ Na raiz do projeto:
 Saída esperada:
 
 ```
+Teste unitario do analisador lexico (lista de tokens)
+---------------------------------------------------------------
+PASS   testes/ok_pipeline.ling      tokens conferidos
+PASS   testes/ok_range.ling         tokens conferidos
+
 Testes que devem ser ACEITOS
 ---------------------------------------------------------------
-PASS   testes/ok_exemplo.ling     aceito
-PASS   testes/ok_for.ling         aceito
-PASS   testes/ok_pipeline.ling    aceito
-PASS   testes/ok_range.ling       aceito
+PASS   testes/ok_exemplo.ling       aceito + saida conferida
+PASS   testes/ok_for.ling           aceito + saida conferida
+PASS   testes/ok_pipeline.ling      aceito + saida conferida
+PASS   testes/ok_prog_fibonacci.ling aceito + saida conferida
+PASS   testes/ok_prog_mdc.ling      aceito + saida conferida
+PASS   testes/ok_range.ling         aceito + saida conferida
 
 Testes que devem ser REJEITADOS
 ---------------------------------------------------------------
-PASS   testes/erro_ponto_virgula.ling rejeitado: Erro sintatico na linha 7
+PASS   testes/erro_ponto_virgula.ling rejeitado: Erro sintatico na linha 7: syntax error (proximo a 'x')
 
 ===============================================================
-5 testes: 5 passaram, 0 falharam
+9 testes: 9 passaram, 0 falharam
 ```
+
+`saida conferida` significa que o teste não apenas rodou sem quebrar: a saída
+foi comparada byte a byte com o arquivo `.saida` guardado ao lado do `.ling`.
 
 Na primeira execução o script constrói a imagem Docker sozinho, o que leva
 cerca de um minuto. Nas seguintes, é imediato.
@@ -87,6 +97,66 @@ permite usar o script direto numa pipeline de CI.
 ```bash
 ./teste.sh; echo "falhas: $?"
 ```
+
+---
+
+## Rodar um teste de cada vez
+
+A bateria roda os nove de uma vez, mas cada arquivo de `testes/` também roda
+sozinho. Serve para investigar uma falha sem o ruído dos outros, ou para
+mostrar um caso específico.
+
+A ação `bison` analisa **e executa** o arquivo; a ação `flex` só lista os
+tokens, sem chamar o parser.
+
+### Executar (análise sintática + interpretador)
+
+| Arquivo | Comando | Resultado esperado |
+| --- | --- | --- |
+| `ok_exemplo.ling` | `.\teste.ps1 bison testes/ok_exemplo.ling` | `x=0`, `y=11`, `media=1.5`, `ok=true` |
+| `ok_for.ling` | `.\teste.ps1 bison testes/ok_for.ling` | `i=0`, `j=2`, `soma=1002` |
+| `ok_range.ling` | `.\teste.ps1 bison testes/ok_range.ling` | `f=11.25`, `i=0` |
+| `ok_pipeline.ling` | `.\teste.ps1 bison testes/ok_pipeline.ling` | imprime `10`, `13`, `10`, `10`; `x=10`, `y=3` |
+| `ok_prog_fibonacci.ling` | `.\teste.ps1 bison testes/ok_prog_fibonacci.ling` | imprime `0 1 1 2 3 5 8 13 21 34`; `a=55`, `b=89`, `t=89` |
+| `ok_prog_mdc.ling` | `.\teste.ps1 bison testes/ok_prog_mdc.ling` | imprime `6`; `a=6`, `b=0`, `t=6` |
+| `erro_ponto_virgula.ling` | `.\teste.ps1 bison testes/erro_ponto_virgula.ling` | `Erro sintatico na linha 7`, código de saída `1` |
+
+No Git Bash, WSL ou Linux é o mesmo comando trocando `.\teste.ps1` por
+`./teste.sh`:
+
+```bash
+./teste.sh bison testes/ok_prog_mdc.ling
+```
+
+### Listar os tokens (análise léxica)
+
+Qualquer um dos arquivos acima aceita a ação `flex`. Os dois que interessam:
+
+| Arquivo | Comando | Para que serve |
+| --- | --- | --- |
+| `ok_range.ling` | `.\teste.ps1 flex testes/ok_range.ling` | confere que `0..10` vira `NUM 0` / `RANGE ..` / `NUM 10`, e que `0.5` continua um `REAL` só |
+| `ok_pipeline.ling` | `.\teste.ps1 flex testes/ok_pipeline.ling` | confere que `\|>` é **um** token `PIPE`, não `\|` seguido de `>` |
+
+Esses dois têm um `.tokens` guardado ao lado, e a bateria compara a lista
+inteira automaticamente — não é conferência no olho.
+
+### Exemplo completo
+
+```powershell
+.\teste.ps1 bison testes/ok_prog_mdc.ling
+```
+
+```
+Análise concluída com sucesso
+6
+Execucao concluida. Valores finais das variaveis:
+  a          int    = 6
+  b          int    = 0
+  t          int    = 6
+```
+
+O `6` no meio é o `a |> print;` do programa; o bloco final é o dump de
+variáveis que o interpretador sempre imprime ao terminar.
 
 ---
 
@@ -277,6 +347,23 @@ Não exige tocar em nenhum script — basta o nome do arquivo.
    - `ok_*.ling` — deve ser aceito **e executar até o fim** (código de saída `0`)
    - `erro_*.ling` — deve ser rejeitado (código diferente de `0`)
 2. Rode a bateria. Ele já aparece na lista.
+3. Opcional, mas recomendado: congele a saída esperada. Rode o teste sozinho,
+   **confira o resultado na mão** e só então grave o `.saida`:
+
+   ```bash
+   ./linguagem testes/ok_meu_teste.ling > testes/ok_meu_teste.saida
+   ```
+
+   A partir daí a bateria compara a saída inteira, não só o código de saída.
+   Para o léxico, o equivalente é o `.tokens`:
+
+   ```bash
+   ./linguagem --tokens testes/ok_meu_teste.ling > testes/ok_meu_teste.tokens
+   ```
+
+   Os dois arquivos são opcionais: sem eles o teste continua valendo, só que
+   verificando menos. **Confira antes de congelar** — gravar uma saída errada
+   deixa a bateria verde em cima de um bug.
 
 O prefixo `ok_` promete duas coisas: que o arquivo compila e que ele executa
 sem erro. Um erro em tempo de execução — divisão por zero, `step` igual a
@@ -340,6 +427,8 @@ projeto/src/
 testes/
   ok_*.ling     programas que devem ser aceitos
   erro_*.ling   programas que devem ser rejeitados
+  *.saida       saida esperada da execucao (opcional, comparada byte a byte)
+  *.tokens      lista de tokens esperada (opcional, teste unitario do lexico)
   run.sh        roda a bateria e conta as falhas
 
 teste.ps1       atalho para tudo, via Docker (PowerShell)

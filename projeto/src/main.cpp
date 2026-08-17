@@ -73,6 +73,11 @@ static int listar_tokens(void)
 
 int main(int argc, char **argv)
 {
+    /* Sem isso o stdout fica bufferizado e o stderr nao: ao redirecionar com
+       '2>&1' as mensagens de erro apareciam ANTES do "Analise concluida com
+       sucesso", invertendo a ordem real dos acontecimentos. */
+    setvbuf(stdout, NULL, _IONBF, 0);
+
     int modo_tokens = 0;
     const char *caminho = NULL;
     FILE *arquivo = NULL;

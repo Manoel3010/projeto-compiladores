@@ -1,2 +1,12 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Scripts de shell precisam de LF mesmo quando clonados no Windows.
+*.sh text eol=lf
+
+# Saidas esperadas da bateria: sao comparadas byte a byte com a saida do
+# binario, que roda em Linux (container) e sempre emite LF. Se o Git as
+# entregasse em CRLF num clone Windows, todo teste com .saida/.tokens
+# falharia mesmo com o codigo correto.
+*.saida text eol=lf
+*.tokens text eol=lf
